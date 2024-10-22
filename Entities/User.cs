@@ -10,9 +10,8 @@ public class User
     public string Email {get; init; }
     public string PhoneNumber {get; init; }
     public string Password { get; init; }
-
     [BsonRepresentation(MongoDB.Bson.BsonType.String)]
     public Role Role;
-    public Guid? ProfileId;
+    public Guid? ProfileId { get; set; }
 }
 

@@ -38,7 +38,7 @@ public class UserRepository : IUserRepository
     public async Task UpdateProfile(User user, Guid ProfileId)
     {
         var filter = filterBuilder.Eq(user => user.UserId, user.UserId);
-        var updateFilter = Builders<User>.Update.Set(user => (user as Patient).PatientProfileId, ProfileId);
+        var updateFilter = Builders<User>.Update.Set(user => (user as Patient).ProfileId, ProfileId);
         await UserCollection.UpdateOneAsync(filter, updateFilter);
     }
 }

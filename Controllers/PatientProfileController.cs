@@ -104,7 +104,7 @@ public class PatientProfileController : ControllerBase
         if (existingPatientProfile is null) return NotFound();
         PatientProfile updatedPatientProfile = new()
         {
-            PatientProfileId = id,
+            PatientProfileId = existingPatientProfile.PatientProfileId,
             FullName = patientProfileDto.Fullname,
             Email = patientProfileDto.Email,
             PhoneNumber = patientProfileDto.PhoneNumber,

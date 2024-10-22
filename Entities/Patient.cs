@@ -5,17 +5,14 @@ namespace HealthAppAPI.Entities;
 [BsonDiscriminator]
 public class Patient : User 
 {
-    public Guid PatientProfileId { get; init; } 
-    public Patient()
-    {
-        this.Role = Role.Patient;
-    }
 
-    public Patient(Guid userId, string email, string phoneNumber, Role role)
+
+    public Patient(Guid userId, string email, string phoneNumber, string password)
     {
         UserId = userId;
         Email = email;
+        Password = password;
         PhoneNumber = phoneNumber;
-        Role = role;
+        Role = Role.Patient;
     }
 }

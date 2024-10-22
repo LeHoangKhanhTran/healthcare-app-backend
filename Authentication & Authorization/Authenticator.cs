@@ -15,6 +15,7 @@ public class Authenticator : IAuthenticator
     public async Task<string> Authenticate(string firstCredentials, string password)
     {
         var user =  Validator.IsValidEmail(firstCredentials) ? await userRepository.GetUserByEmail(firstCredentials) : await userRepository.GetUserByPhoneNumber(firstCredentials);
+        Console.WriteLine(Validator.IsValidEmail(firstCredentials));
         if (user is null) 
             throw new Exception("Can't find user with the provided phoneNumber/email.");
         

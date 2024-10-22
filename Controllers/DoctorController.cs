@@ -64,7 +64,7 @@ public class DoctorController : ControllerBase
     [HttpPut("{id}", Name = "UpdateDoctor")]
     public async Task<ActionResult> UpdateDoctor(Guid id, [FromForm] UpdateDoctorDto doctorDto)
     {
-        var existingDoctor = _doctorRepository.GetDoctorById(id);
+        var existingDoctor = await _doctorRepository.GetDoctorById(id);
         if (existingDoctor is null) return NotFound();
         string imageUrl = "";
         try {
@@ -84,7 +84,7 @@ public class DoctorController : ControllerBase
             DoctorId = id, 
             Name = doctorDto.Name, 
             DoctorInfo = doctorDto.DoctorInfo, 
-            DoctorImageUrl = imageUrl, 
+            DoctorImageUrl = imageUrl.Length > 0 ? imageUrl : existingDoctor.DoctorImageUrl, 
             Specialties = doctorDto.Specialties,
         };
         await _doctorRepository.UpdateDoctor(updatedDoctor);

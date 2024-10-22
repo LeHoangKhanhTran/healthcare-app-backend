@@ -28,7 +28,7 @@ public class UserController : ControllerBase
         try {
             if (userDto.Email is null && userDto.PhoneNumber is null) throw new Exception("No phone number nor email was provided."); 
             string? credentials = userDto.Email is not null && userDto.Email.Length > 0 ? userDto.Email : userDto.PhoneNumber;
-        
+    
             var token = await _authenticator.Authenticate(credentials, userDto.Password);
             if (token is null)
                 return Unauthorized();
@@ -68,14 +68,7 @@ public class UserController : ControllerBase
             if (existingUser is not null) throw new Exception("This phone number has been registered.");
         }
         Security.CheckValidPassword(userDto.Password); 
-        User user = new Patient()
-        {
-            UserId = Guid.NewGuid(),
-            Password = Security.HashPassword(userDto.Password),
-            Email = userDto.Email,
-            PhoneNumber = userDto.PhoneNumber,
-            Role = Enums.Role.Patient,
-        };
+        Patient user = new Patient(new Guid(), userDto.Email, userDto.PhoneNumber, Security.HashPassword(userDto.Password));
         await _userRepository.CreateUser(user);
         _logger.LogInformation("New user registered.");
         return Ok();
