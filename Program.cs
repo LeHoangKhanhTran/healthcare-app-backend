@@ -23,7 +23,7 @@ else
     cloudinaryURL = Environment.GetEnvironmentVariable("CloudinaryURL");
     jwtKey = Environment.GetEnvironmentVariable("JwtKey");
 }
-Console.WriteLine(connectionString);
+
 
 IMongoClient mongoClient = new MongoClient(connectionString);
 builder.Services.AddSingleton<IMongoDatabase>(serviceProvider => 
@@ -51,7 +51,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Allow All", builder => 
     {
-        builder.WithOrigins("http://localhost:5173")
+        builder.WithOrigins(allowedOrigins)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
