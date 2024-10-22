@@ -10,7 +10,7 @@ var env = builder.Environment;
 string connectionString = "";
 string cloudinaryURL = "";
 string jwtKey = "";
-string[] allowedOrigins = new string[]{ env.IsDevelopment() ? "http://localhost:5173" : ""};
+string[] allowedOrigins = new string[]{ env.IsDevelopment() ? "http://localhost:5173" : "https://healthcare-app-frontend-sd4b.vercel.app"};
 if (env.IsDevelopment()) 
 {
     connectionString = builder.Configuration["Database:ConnectionString"];
