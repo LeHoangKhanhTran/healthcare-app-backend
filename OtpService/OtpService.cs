@@ -4,14 +4,17 @@ using Twilio.Rest.Verify.V2.Service;
 public class OtpService : IOtpService
 {
     private readonly IConfiguration config;
-    public OtpService(IConfiguration config) 
+    IWebHostEnvironment env;
+
+    public OtpService(IConfiguration config, IWebHostEnvironment env) 
     {
         this.config = config;
+        this.env = env;
     }
     public async Task<string> SendOtp(string phoneNumber)
     {
-        string accountSid = config["Twilio:AccountSid"];
-        string authToken = config["Twilio:AuthToken"];
+        string accountSid = env.IsDevelopment() ? config["Twilio:AccountSid"] : Environment.GetEnvironmentVariable("AccountSid");
+        string authToken = env.IsDevelopment() ? config["Twilio:AuthToken"] : Environment.GetEnvironmentVariable("AuthToken");
 
         TwilioClient.Init(accountSid, authToken);
 
@@ -24,8 +27,8 @@ public class OtpService : IOtpService
 
     public async Task<string> CheckOtp(string phoneNumber, string code)
     {
-        string accountSid = config["Twilio:AccountSid"];
-        string authToken = config["Twilio:AuthToken"];
+        string accountSid = env.IsDevelopment() ? config["Twilio:AccountSid"] : Environment.GetEnvironmentVariable("AccountSid");
+        string authToken = env.IsDevelopment() ? config["Twilio:AuthToken"] : Environment.GetEnvironmentVariable("AuthToken");
 
         TwilioClient.Init(accountSid, authToken);
 

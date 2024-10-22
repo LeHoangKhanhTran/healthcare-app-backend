@@ -6,12 +6,25 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
-string connectionString = builder.Configuration["Database:ConnectionString"];
-string cloudinaryUrl = builder.Configuration["Cloudinary:CloudinaryURL"];
+var env = builder.Environment;
+string connectionString = "";
+string cloudinaryURL = "";
+string jwtKey = "";
+string[] allowedOrigins = new string[]{ env.IsDevelopment() ? "http://localhost:5173" : "https://manga-application-frontend.vercel.app"};
+if (env.IsDevelopment()) 
+{
+    connectionString = builder.Configuration["Database:ConnectionString"];
+    cloudinaryURL = builder.Configuration["Cloudinary:CloudinaryURL"];
+    jwtKey = builder.Configuration["Authentication:JwtKey"];
+}
+else 
+{
+    connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+    cloudinaryURL = Environment.GetEnvironmentVariable("CloudinaryURL");
+    jwtKey = Environment.GetEnvironmentVariable("JwtKey");
+}
+
 IMongoClient mongoClient = new MongoClient(connectionString);
-string[] allowedOrigins = new string[]{ "http://localhost:5173" };
-
-
 builder.Services.AddSingleton<IMongoDatabase>(serviceProvider => 
 {
     IMongoDatabase database = mongoClient.GetDatabase("Healthcare");
@@ -20,7 +33,7 @@ builder.Services.AddSingleton<IMongoDatabase>(serviceProvider =>
 
 builder.Services.AddSingleton<ICloudinaryUploader, CloudinaryUploader>(serviceProvider =>
 {
-    Cloudinary cloudinary = new(cloudinaryUrl);
+    Cloudinary cloudinary = new(cloudinaryURL);
     cloudinary.Api.Secure = true;
     return new(cloudinary);
 });

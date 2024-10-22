@@ -7,10 +7,12 @@ public class Authenticator : IAuthenticator
 {
     private readonly IUserRepository userRepository;
     private readonly IConfiguration config;
-    public Authenticator(IUserRepository userRepository, IConfiguration config)
+    IWebHostEnvironment env;
+    public Authenticator(IUserRepository userRepository, IConfiguration config, IWebHostEnvironment env)
     {
         this.userRepository = userRepository;
         this.config = config;
+        this.env = env;
     }
     public async Task<string> Authenticate(string firstCredentials, string password)
     {
@@ -22,7 +24,7 @@ public class Authenticator : IAuthenticator
         if (!Security.VerifyPassword(password, user.Password))
             throw new Exception("Incorrect password.");
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenKey = Encoding.ASCII.GetBytes(config["Authentication:JwtKey"].ToString());
+        var tokenKey = Encoding.ASCII.GetBytes(env.IsDevelopment() ? config["Authentication:JwtKey"].ToString() : Environment.GetEnvironmentVariable("JwtKey").ToString());
         string type = Validator.IsValidEmail(firstCredentials) ? ClaimTypes.Email : ClaimTypes.MobilePhone;
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
@@ -45,7 +47,7 @@ public class Authenticator : IAuthenticator
     public ClaimsPrincipal GetClaimsFromToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenKey = Encoding.ASCII.GetBytes("a593d7258dcaa991f2a0a5562ee429379b3aa71cb3438586cb0af71a138f56846e43aebfad301085cdd93b9e05e26308965b1b179c8e6af12ac16b77c16033b9");
+        var tokenKey = Encoding.ASCII.GetBytes(env.IsDevelopment() ? config["Authentication:JwtKey"].ToString() : Environment.GetEnvironmentVariable("JwtKey").ToString());
         var validationParameters = new TokenValidationParameters 
         {
             ValidateIssuerSigningKey = true,
