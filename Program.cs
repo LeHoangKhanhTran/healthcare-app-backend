@@ -10,7 +10,7 @@ var env = builder.Environment;
 string connectionString = "";
 string cloudinaryURL = "";
 string jwtKey = "";
-string[] allowedOrigins = new string[]{ env.IsDevelopment() ? "http://localhost:5173" : "https://manga-application-frontend.vercel.app"};
+string[] allowedOrigins = new string[]{ env.IsDevelopment() ? "http://localhost:5173" : ""};
 if (env.IsDevelopment()) 
 {
     connectionString = builder.Configuration["Database:ConnectionString"];
@@ -23,6 +23,7 @@ else
     cloudinaryURL = Environment.GetEnvironmentVariable("CloudinaryURL");
     jwtKey = Environment.GetEnvironmentVariable("JwtKey");
 }
+Console.WriteLine(connectionString);
 
 IMongoClient mongoClient = new MongoClient(connectionString);
 builder.Services.AddSingleton<IMongoDatabase>(serviceProvider => 
