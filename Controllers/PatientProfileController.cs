@@ -23,9 +23,9 @@ public class PatientProfileController : ControllerBase
     }
 
     [HttpGet(Name = "GetPatientProfiles")]
-    public async Task<IEnumerable<PatientProfile>> GetPatientProfiles([FromQuery]PatientProfileQueryParams queryParams)
+    public async Task<IEnumerable<PatientProfileDto>> GetPatientProfiles([FromQuery]PatientProfileQueryParams queryParams)
     {
-        return await _patientProfileRepository.GetPatientProfiles(queryParams);
+        return (await _patientProfileRepository.GetPatientProfiles(queryParams)).Select(profile => profile.AsDto());
     }
 
     [HttpGet("{id}", Name = "GetPatientProfileById")]
