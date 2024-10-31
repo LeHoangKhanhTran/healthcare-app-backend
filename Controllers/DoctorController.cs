@@ -86,6 +86,7 @@ public class DoctorController : ControllerBase
             DoctorInfo = doctorDto.DoctorInfo, 
             DoctorImageUrl = imageUrl.Length > 0 ? imageUrl : existingDoctor.DoctorImageUrl, 
             Specialties = doctorDto.Specialties,
+            Shifts = existingDoctor.Shifts
         };
         await _doctorRepository.UpdateDoctor(updatedDoctor);
         return Ok();
