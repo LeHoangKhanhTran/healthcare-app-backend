@@ -30,6 +30,10 @@ public class PatientProfileRepository : IPatientProfileRepository
         {
             filter = filterBuilder.Regex(patientProfile => patientProfile.FullName, new BsonRegularExpression($"(?i){queryParams.FullName}"));
         }
+        if (queryParams.Page is not null && queryParams.PageSize is not null && queryParams.Page > 0)
+        {
+            return await PatientProfileCollection.Find(filter).Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+        }
         return await PatientProfileCollection.Find(filter).ToListAsync();
     }
 

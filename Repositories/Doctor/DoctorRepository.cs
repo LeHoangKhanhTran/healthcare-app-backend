@@ -30,6 +30,10 @@ public class DoctorRepository : IDoctorRepository
         {
             filter = filterBuilder.And(filterList);
         }
+        if (queryParams.Page is not null && queryParams.PageSize is not null && queryParams.Page > 0)
+        {
+            return await DoctorCollection.Find(filter).Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+        }
         return await DoctorCollection.Find(filter).ToListAsync();
     }
 

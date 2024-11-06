@@ -48,6 +48,10 @@ public class AppointmentRepository : IAppointmentRepository
                 query.SortBy(appoinment => appoinment.CreatedDate);
             }
         }
+        if (queryParams.Page is not null && queryParams.PageSize is not null && queryParams.Page > 0) 
+        {
+            return await query.Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+        }
         return await query.ToListAsync();
     }
 
