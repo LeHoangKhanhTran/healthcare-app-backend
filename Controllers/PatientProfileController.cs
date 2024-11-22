@@ -23,9 +23,17 @@ public class PatientProfileController : ControllerBase
     }
 
     [HttpGet(Name = "GetPatientProfiles")]
-    public async Task<IEnumerable<PatientProfileDto>> GetPatientProfiles([FromQuery]PatientProfileQueryParams queryParams)
+    public async Task<object> GetPatientProfiles([FromQuery]PatientProfileQueryParams queryParams)
     {
-        return (await _patientProfileRepository.GetPatientProfiles(queryParams)).Select(profile => profile.AsDto());
+        var result = await _patientProfileRepository.GetPatientProfiles(queryParams);
+        if (result is PaginatedList<PatientProfile>) {
+            return new PaginatedList<PatientProfileDto>(
+                ((PaginatedList<PatientProfile>)result).ListItems.Select(p => p.AsDto()),
+                ((PaginatedList<PatientProfile>)result).CurrentPage,
+                ((PaginatedList<PatientProfile>)result).TotalPage
+            );
+        }
+        return ((IEnumerable<PatientProfile>)result).Select(p => p.AsDto());
     }
 
     [HttpGet("{id}", Name = "GetPatientProfileById")]

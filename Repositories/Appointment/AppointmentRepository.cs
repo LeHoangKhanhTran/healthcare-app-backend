@@ -2,6 +2,7 @@ using HealthAppAPI.Entities;
 using HealthAppAPI.Enums;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using OneOf;
 
 public class AppointmentRepository : IAppointmentRepository
 {
@@ -30,7 +31,7 @@ public class AppointmentRepository : IAppointmentRepository
         return await AppointmentCollection.Find(filter).ToListAsync();
     }
 
-    public async Task<IEnumerable<Appointment>> GetAppointments(AppointmentQueryParams queryParams)
+    public async Task<object> GetAppointments(AppointmentQueryParams queryParams)
     {
         FilterDefinition<Appointment> filter = filterBuilder.Empty;
         if (queryParams.Status is not null && queryParams.Status.Length > 0 && Enum.TryParse<AppointmentStatus>(queryParams.Status, out var status))
@@ -50,9 +51,13 @@ public class AppointmentRepository : IAppointmentRepository
         }
         if (queryParams.Page is not null && queryParams.PageSize is not null && queryParams.Page > 0) 
         {
-            return await query.Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+            long count = await AppointmentCollection.CountDocumentsAsync(filter);
+            int totalPage = (int)Math.Ceiling(count / (double)queryParams.PageSize);
+            var results = await query.Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+            return new PaginatedList<Appointment>(results, (int)queryParams.Page, totalPage);
         }
-        return await query.ToListAsync();
+        var list = await query.ToListAsync();
+        return list;
     }
 
     // public async Task UpdateAppointment(Appointment appointment)

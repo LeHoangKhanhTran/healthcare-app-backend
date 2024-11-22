@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 public interface IDoctorRepository
 {
-    public Task<IEnumerable<Doctor>> GetDoctors(DoctorQueryParams queryParams);
+    public Task<object> GetDoctors(DoctorQueryParams queryParams);
     public Task<Doctor> GetDoctorById(Guid id);
     public Task CreateDoctor(Doctor doctor);
     public Task UpdateDoctor(Doctor doctor);

@@ -23,7 +23,7 @@ public class PatientProfileRepository : IPatientProfileRepository
         return await PatientProfileCollection.Find(filter).SingleOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<PatientProfile>> GetPatientProfiles(PatientProfileQueryParams queryParams)
+    public async Task<object> GetPatientProfiles(PatientProfileQueryParams queryParams)
     {
         var filter = filterBuilder.Empty;
         if (queryParams.FullName is not null && queryParams.FullName.Length > 0)
@@ -32,9 +32,13 @@ public class PatientProfileRepository : IPatientProfileRepository
         }
         if (queryParams.Page is not null && queryParams.PageSize is not null && queryParams.Page > 0)
         {
-            return await PatientProfileCollection.Find(filter).Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+            long count = await PatientProfileCollection.CountDocumentsAsync(filter);
+            int totalPage = (int)Math.Ceiling(count / (double)queryParams.PageSize);
+            var results = await PatientProfileCollection.Find(filter).Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+            return new PaginatedList<PatientProfile>(results, (int)queryParams.Page, totalPage) ;
         }
-        return await PatientProfileCollection.Find(filter).ToListAsync();
+        var list = await PatientProfileCollection.Find(filter).ToListAsync();
+        return list;
     }
 
     public async Task UpdatePatientProfile(PatientProfile patientProfile)

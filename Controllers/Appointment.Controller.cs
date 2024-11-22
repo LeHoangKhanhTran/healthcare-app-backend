@@ -3,6 +3,7 @@ using HealthAppAPI.Entities;
 using HealthAppAPI.Enums;
 using HealthAppAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using OneOf;
 
 namespace HealthAppAPI.Controllers;
 
@@ -23,11 +24,19 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet(Name = "GetAppointments")]
-    public async Task<IEnumerable<AppointmentDto>> GetAppointments([FromQuery] AppointmentQueryParams queryParams)
+    public async Task<object> GetAppointments([FromQuery] AppointmentQueryParams queryParams)
     {
-        var appointments = await _appointmentRepository.GetAppointments(queryParams);
-        return appointments.Select(appointment => appointment.AsDto());
+        var result = await _appointmentRepository.GetAppointments(queryParams);
+        if (result is PaginatedList<Appointment> appointments) {
+            return new PaginatedList<AppointmentDto>(
+                ((PaginatedList<Appointment>)result).ListItems.Select(a => a.AsDto()),
+                ((PaginatedList<Appointment>)result).CurrentPage,
+                ((PaginatedList<Appointment>)result).TotalPage
+            );
+        }
+        return ((IEnumerable<Appointment>)result).Select(a => a.AsDto());
     }
+
 
     [HttpGet("{id}", Name = "GetAppointmentById")]
     public async Task<AppointmentDto> GetAppointmentId(Guid id)

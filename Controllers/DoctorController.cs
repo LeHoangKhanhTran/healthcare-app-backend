@@ -19,10 +19,18 @@ public class DoctorController : ControllerBase
     }
 
     [HttpGet(Name = "GetDoctors")]
-    public async Task<IEnumerable<DoctorDto>> GetDoctors([FromQuery] DoctorQueryParams queryParams)
+    public async Task<object> GetDoctors([FromQuery] DoctorQueryParams queryParams)
     {
-        var doctors = await _doctorRepository.GetDoctors(queryParams);
-        return doctors.Select(doctor => doctor.AsDto());
+        var result= await _doctorRepository.GetDoctors(queryParams);
+        if (result is PaginatedList<Doctor> doctors) 
+        {
+            return new PaginatedList<DoctorDto>(
+                ((PaginatedList<Doctor>)result).ListItems.Select(d => d.AsDto()),
+                ((PaginatedList<Doctor>)result).CurrentPage,
+                ((PaginatedList<Doctor>)result).TotalPage
+            );
+        }
+        return ((IEnumerable<Doctor>)result).Select(d => d.AsDto());
     }
 
     [HttpGet("{id}", Name = "GetDoctorById")]

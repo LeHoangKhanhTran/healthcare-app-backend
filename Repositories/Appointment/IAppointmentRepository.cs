@@ -1,9 +1,10 @@
 
 using HealthAppAPI.Entities;
 using HealthAppAPI.Enums;
+using OneOf;
 public interface IAppointmentRepository 
 {
-    public Task<IEnumerable<Appointment>> GetAppointments(AppointmentQueryParams queryParams);
+    public Task<object> GetAppointments(AppointmentQueryParams queryParams);
     public Task<Appointment> GetAppointmentById(Guid id);
     public Task<IEnumerable<Appointment>> GetAppointmentsByPatientId(Guid patientId);
     public Task CreateAppointment(Appointment appointment);

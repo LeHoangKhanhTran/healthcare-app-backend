@@ -2,7 +2,7 @@ using HealthAppAPI.Entities;
 
 public interface IPatientProfileRepository
 {
-    public Task<IEnumerable<PatientProfile>> GetPatientProfiles(PatientProfileQueryParams queryParams);
+    public Task<object> GetPatientProfiles(PatientProfileQueryParams queryParams);
     public Task<PatientProfile> GetPatientProfileById(Guid id);
     public Task CreatePatientProfile(PatientProfile PatientProfile);
     public Task UpdatePatientProfile(PatientProfile PatientProfile);

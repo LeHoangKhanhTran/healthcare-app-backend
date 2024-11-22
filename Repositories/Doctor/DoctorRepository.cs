@@ -12,7 +12,7 @@ public class DoctorRepository : IDoctorRepository
         this.DoctorCollection = database.GetCollection<Doctor>(CollectionName);
     }
 
-    public async Task<IEnumerable<Doctor>> GetDoctors(DoctorQueryParams queryParams)
+    public async Task<object> GetDoctors(DoctorQueryParams queryParams)
     {
         var filter = filterBuilder.Empty;
         List<FilterDefinition<Doctor>> filterList = new(); 
@@ -32,9 +32,13 @@ public class DoctorRepository : IDoctorRepository
         }
         if (queryParams.Page is not null && queryParams.PageSize is not null && queryParams.Page > 0)
         {
-            return await DoctorCollection.Find(filter).Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+            long count = await DoctorCollection.CountDocumentsAsync(filter);
+            int totalPage = (int)Math.Ceiling(count / (double)queryParams.PageSize);
+            var results = await DoctorCollection.Find(filter).Skip((queryParams.Page - 1) * queryParams.PageSize).Limit(queryParams.PageSize).ToListAsync();
+            return new PaginatedList<Doctor>(results, (int)queryParams.Page, totalPage);
         }
-        return await DoctorCollection.Find(filter).ToListAsync();
+        var list = await DoctorCollection.Find(filter).ToListAsync();
+        return list;
     }
 
     public async Task CreateDoctor(Doctor doctor)
