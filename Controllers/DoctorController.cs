@@ -1,5 +1,6 @@
 using HealthAppAPI.Entities;
 using HealthAppAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAppAPI.Controllers;
@@ -17,9 +18,8 @@ public class DoctorController : ControllerBase
         _cloudinaryUploader = cloudinaryUploader;
         _logger = logger;
     }
-
-    [HttpGet(Name = "GetDoctors")]
-    public async Task<object> GetDoctors([FromQuery] DoctorQueryParams queryParams)
+    
+    [HttpGet(Name = "GetDoctors")]     public async Task<object> GetDoctors([FromQuery] DoctorQueryParams queryParams)
     {
         var result= await _doctorRepository.GetDoctors(queryParams);
         if (result is PaginatedList<Doctor> doctors) 

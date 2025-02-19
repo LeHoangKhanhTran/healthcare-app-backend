@@ -2,6 +2,7 @@ using System.Globalization;
 using HealthAppAPI.Entities;
 using HealthAppAPI.Enums;
 using HealthAppAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAppAPI.Controllers;
@@ -23,6 +24,7 @@ public class PatientProfileController : ControllerBase
     }
 
     [HttpGet(Name = "GetPatientProfiles")]
+    [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
     public async Task<object> GetPatientProfiles([FromQuery]PatientProfileQueryParams queryParams)
     {
         var result = await _patientProfileRepository.GetPatientProfiles(queryParams);

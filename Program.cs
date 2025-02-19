@@ -1,9 +1,13 @@
+using System.Text;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
@@ -66,7 +70,7 @@ BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -75,7 +79,28 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/user/authenticate";
     options.Cookie.Name = "access_token";
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, bearer =>
+{
+    bearer.RequireHttpsMetadata = false;
+    bearer.SaveToken = true;
+    bearer.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtKey)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+    bearer.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies["access_token"] is not null)  context.Token = context.Request.Cookies["access_token"];
+            return Task.CompletedTask;
+        }
+    };
 });
+
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 

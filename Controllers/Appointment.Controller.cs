@@ -2,9 +2,8 @@ using System.Globalization;
 using HealthAppAPI.Entities;
 using HealthAppAPI.Enums;
 using HealthAppAPI.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OneOf;
-
 namespace HealthAppAPI.Controllers;
 
 [ApiController]
@@ -24,6 +23,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet(Name = "GetAppointments")]
+    [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
     public async Task<object> GetAppointments([FromQuery] AppointmentQueryParams queryParams)
     {
         var result = await _appointmentRepository.GetAppointments(queryParams);

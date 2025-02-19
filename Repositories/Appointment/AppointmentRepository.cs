@@ -2,7 +2,6 @@ using HealthAppAPI.Entities;
 using HealthAppAPI.Enums;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using OneOf;
 
 public class AppointmentRepository : IAppointmentRepository
 {

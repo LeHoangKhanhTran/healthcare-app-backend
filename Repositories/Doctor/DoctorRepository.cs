@@ -1,4 +1,5 @@
 using HealthAppAPI.Entities;
+using Microsoft.AspNetCore.Authorization;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
